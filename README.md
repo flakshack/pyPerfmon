@@ -29,6 +29,7 @@ Data is returned in JSON format for easy consumption by my SysAdminBoard program
 {"smtp_send_total": 90511.0, "smtp_receive_total": 85173.0}
 ```
 
+Note that if you wanted to use this service to return data directly to one of the StatusBoard's built-in graphing functions, it would be trivial to modify the code to store 30 minutes or so of data.
 
 
 
