@@ -1,12 +1,17 @@
 #!/usr/bin/env python
-"""smtp_counters - Will read a list of perfmon counters from a file, lookup values and present results via webservice"""
+"""pyperfmon - Will read a list of perfmon counters from a file, lookup values and present results via webservice
+
+pywin32 requires a manual install (can't be installed via pip) from https://github.com/mhammond/pywin32/releases
+
+"""
 
 __author__ = 'scottv@rbh.com (Scott Vintinner)'
 
 import cherrypy
 import win32pdh
 import json
-from ConfigParser import SafeConfigParser
+import time
+from configparser import ConfigParser
 
 # Compile to EXE using c:\Python27\scripts\pyinstaller.exe -F pyperfmon.py
 
@@ -22,11 +27,23 @@ class MyWebServer(object):
             for counter in counters:
                 # Query Windows PerfMon for the specified counter
                 perfmon_query = win32pdh.OpenQuery(None, 0)
-                perfmon_counter = win32pdh.AddCounter(perfmon_query, counter["path"], 0)
-                win32pdh.CollectQueryData(perfmon_query)
-                _, value = win32pdh.GetFormattedCounterValue(perfmon_counter, win32pdh.PDH_FMT_DOUBLE)
-                win32pdh.CloseQuery(perfmon_query)
-                data[counter["name"]] = value
+                try:
+                    perfmon_counter = win32pdh.AddCounter(perfmon_query, counter["path"], 0)
+                    try:
+                        # Note that some counters require multiple samples or they will return an error
+                        # so we query each counter twice before checking for the value.
+                        # see https://stackoverflow.com/a/60542852/1136438
+
+                        win32pdh.CollectQueryData(perfmon_query)
+                        time.sleep(1)
+                        win32pdh.CollectQueryData(perfmon_query)
+                        _, value = win32pdh.GetFormattedCounterValue(perfmon_counter, win32pdh.PDH_FMT_DOUBLE)
+
+                        data[counter["name"]] = value
+                    finally:
+                        win32pdh.RemoveCounter(perfmon_counter)
+                finally:
+                    win32pdh.CloseQuery(perfmon_query)
 
         except Exception as error:
             data = {"error": error.message}
@@ -36,7 +53,7 @@ class MyWebServer(object):
 
 # Read in the list of counters from pyperfmon.ini
 counters = []
-parser = SafeConfigParser()
+parser = ConfigParser()
 parser.read('pyperfmon.ini')
 for counter_name, counter_path in parser.items("counters"):
     counters.append({"name": counter_name, "path": counter_path})
