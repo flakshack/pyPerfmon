@@ -3,6 +3,14 @@
 
 pywin32 requires a manual install (can't be installed via pip) from https://github.com/mhammond/pywin32/releases
 
+To create the EXE:
+pip install pyinstaller
+then # Compile to EXE using pyinstaller with paths parameter to include pywin32 DLLs
+pyinstaller.exe -F pyperfmon.py -p c:\Python38-32 --paths=C:\Python38-32\Lib\site-packages\pywin32_system32
+
+#Note that there was an issue with pyinstaller resolved by adding this file to the pyinstaller/hooks directory
+https://github.com/AndCycle/pyinstaller/commit/926402a88c04226f8ec116ca858f60627f7336f0
+
 """
 
 __author__ = 'scottv@rbh.com (Scott Vintinner)'
@@ -12,8 +20,6 @@ import win32pdh
 import json
 import time
 from configparser import ConfigParser
-
-# Compile to EXE using c:\Python27\scripts\pyinstaller.exe -F pyperfmon.py
 
 
 class MyWebServer(object):
