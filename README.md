@@ -3,8 +3,8 @@ pyPerfMon
 
 pyPerfMon is a simple windows web service that will expose perfmon counters as JSON data.  It is designed to be used with my [SysAdminBoard](https://github.com/flakshack/SysAdminBoard) program.
 
-##Features
-###pyPerfMon
+## Features
+### pyPerfMon
 
 This is a Windows program that will launch a mini CherryPy Webserver to expose data from the Windows Performance Monitor.  The program is configured via the PYPERFMON.INI file.
 ```
@@ -36,10 +36,13 @@ Note that if you wanted to use this service to return data directly to one of th
 
 
 
-###CounterId
-![CounterId Screenshot](readme-images/counterid.png)
+### CounterId
 
 This program will help you identify counter names so you can add them to the PYPERMON.INI file.  When you click on the ADD button, it will output the counter's name to a console window.  You can then copy this name to the PYPERFMON.INI file.
+
+![CounterId Screenshot](readme-images/counterid.png)
+
+
 
 ##Links to Projects used here
 * [pyinstaller](http://www.pyinstaller.org/) - Used to compile python to EXE
